@@ -185,12 +185,7 @@ Kodlar renklendirilmiş gösterilir:
 - **Max Tokens:** ~16000
 - **Temperature:** 0.2
 
-### Cost Estimation
-- **Input:** ~$0.00003 / 1K token
-- **Output:** ~$0.00006 / 1K token
-- **Örnek:** 500 satır kod ≈ $0.02 - $0.05
 
----
 
 ## 🛠️ Teknoloji Stack
 
@@ -298,64 +293,17 @@ Değişiklikten sonra: npm start ile sunucuyu yeniden başlat
 
 ---
 
-## 🎯 Gelecek Özellikler (Roadmap)
-
-- [ ] GitHub entegrasyonu (otomatik PR review)
-- [ ] Slack bot desteği
-- [ ] Vs Code extension
-- [ ] Self-hosted LLM desteği (Ollama, LLaMA)
-- [ ] Batch analiz (birden çok dosya)
-- [ ] CI/CD Pipeline entegrasyonu
-- [ ] Custom rule tanımı
-- [ ] Ekip işbirliği özellikleri
-- [ ] Analytics dashboard
-
 ---
 
 ## 📝 Lisans
 
-MIT License - [LICENSE.md](LICENSE.md)
+Apache 2.0
 
 ---
 
-## 🤝 Katkı
-
-Katkılar hoş geldiniz! Lütfen:
-
-1. Repository'i fork et
-2. Feature branch'ı oluştur (`git checkout -b feature/AmazingFeature`)
-3. Commit et (`git commit -m 'Add AmazingFeature'`)
-4. Push et (`git push origin feature/AmazingFeature`)
-5. Pull Request aç
 
 ---
 
 ## 📧 İletişim
 
-- **Email:** your-email@example.com
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Twitter:** [@yourhandle](https://twitter.com/yourhandle)
-
----
-
-## 🙏 Teşekkürler
-
-- [OpenAI](https://openai.com) - GPT-4 API
-- [React](https://react.dev) - UI Framework
-- [Prism.js](https://prismjs.com) - Syntax Highlighting (eğer kullanılıyorsa)
-
----
-
-## 📊 İstatistikler
-
-- **Desteklenen Diller:** 13+
-- **Review Kategorileri:** 4 (Security, Performance, Readability, Maintainability)
-- **Bulgu Türleri:** 4 (Critical, Warning, Suggestion, Style)
-- **Tema Sayısı:** 2 (Dark, Light)
-- **Dil Desteği:** 2+ (Türkçe, İngilizce)
-
----
-
-**Made with ❤️ for better code quality**
-
-⭐ Faydalı bulduysan, Repository'e star ver!
+- LinkedIn: https://www.linkedin.com/in/efe-kesler-31519a323/
