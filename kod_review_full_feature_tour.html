@@ -1,0 +1,595 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+#stage{width:100%;aspect-ratio:16/9;background:#0d1117;border-radius:10px;overflow:hidden;position:relative;font-family:'SF Mono',Consolas,monospace;font-size:clamp(7px,1.15vw,13px)}
+.sc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .45s;pointer-events:none;flex-direction:column}
+.sc.on{opacity:1;pointer-events:auto}
+#bar{position:absolute;bottom:0;left:0;height:3px;background:#1f6feb;z-index:20;border-radius:0}
+#lbl{position:absolute;bottom:8px;right:10px;font-size:clamp(6px,.9vw,10px);color:#484f58;z-index:20}
+#pbtn{position:absolute;top:8px;right:10px;background:#21262d;border:1px solid #30363d;color:#8b949e;padding:3px 8px;border-radius:5px;cursor:pointer;font-family:inherit;font-size:clamp(6px,.9vw,10px);z-index:20}
+#pbtn:hover{color:#c9d1d9}
+.traf{display:flex;gap:5px}.dot{width:clamp(6px,1vw,11px);height:clamp(6px,1vw,11px);border-radius:50%}
+.panel{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden}
+.hdr{background:#161b22;border-bottom:1px solid #30363d;padding:clamp(4px,.6vw,7px) clamp(8px,1.2vw,14px);display:flex;align-items:center;gap:8px}
+.tag{background:#21262d;border:1px solid #30363d;border-radius:4px;padding:2px 7px;color:#8b949e;font-size:clamp(6px,.85vw,10px)}
+.btn{background:#21262d;border:1px solid #30363d;border-radius:5px;padding:3px 9px;color:#c9d1d9;font-size:clamp(6px,.85vw,10px);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.btn.green{background:#238636;border-color:#2ea043;color:#fff}
+.btn.blue{background:#1f6feb;border-color:#388bfd;color:#fff}
+.chip{border-radius:12px;padding:2px 9px;font-size:clamp(6px,.8vw,10px);font-weight:700;border:1px solid}
+.code-bg{background:#0d1117;border:1px solid #30363d;border-radius:0 0 7px 7px;padding:clamp(6px,1vw,12px) 0;line-height:1.75}
+.cl{display:flex}.ln{width:28px;text-align:right;padding-right:8px;color:#484f58;flex-shrink:0;font-size:clamp(5px,.8vw,10px)}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.nu{color:#79c0ff}.id{color:#c9d1d9}.cm{color:#8b949e}
+.tab-bar{display:flex;background:#161b22;border-bottom:1px solid #30363d}
+.tab{flex:1;padding:clamp(4px,.6vw,8px) 4px;text-align:center;color:#8b949e;font-size:clamp(5px,.8vw,10px);border-bottom:2px solid transparent}
+.tab.active{color:#c9d1d9;border-bottom-color:#58a6ff;font-weight:700}
+.bar-wrap{height:5px;background:#21262d;border-radius:3px;overflow:hidden;margin-top:3px}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.finding{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:clamp(5px,.8vw,9px) clamp(7px,1.1vw,12px);margin-bottom:6px;opacity:0;transition:opacity .35s,transform .35s;transform:translateX(-10px)}
+.finding.in{opacity:1;transform:none}
+.scene-title{position:absolute;top:clamp(8px,1.2vw,14px);left:50%;transform:translateX(-50%);background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 14px;color:#58a6ff;font-size:clamp(6px,.9vw,11px);white-space:nowrap;font-family:system-ui}
+</style>
+
+<div id="stage">
+<button id="pbtn">⏸</button>
+<div id="bar"></div>
+<div id="lbl">1/18</div>
+
+<!-- S1 INTRO -->
+<div class="sc on" id="s1">
+  <div style="text-align:center">
+    <div style="font-size:clamp(26px,5.5vw,58px);margin-bottom:clamp(8px,1.5vw,18px)">🔍</div>
+    <div style="font-size:clamp(16px,3.8vw,44px);font-weight:700;letter-spacing:-1px">
+      <span style="color:#58a6ff">Kod</span> <span style="color:#e6edf3">Review</span> <span style="color:#3fb950">Bot</span>
+    </div>
+    <div id="s1s" style="font-family:system-ui;font-size:clamp(8px,1.3vw,14px);color:#8b949e;margin-top:8px;opacity:0;transition:opacity .6s">Tüm özellik turu · 18 sahne</div>
+    <div id="s1t" style="display:flex;gap:7px;justify-content:center;margin-top:10px;opacity:0;transition:opacity .6s;flex-wrap:wrap">
+      <span style="background:#161b22;border:1px solid #30363d;border-radius:16px;padding:3px 10px;font-size:clamp(6px,.9vw,11px);color:#58a6ff">GPT-4o</span>
+      <span style="background:#161b22;border:1px solid #30363d;border-radius:16px;padding:3px 10px;font-size:clamp(6px,.9vw,11px);color:#3fb950">TR / EN</span>
+      <span style="background:#161b22;border:1px solid #30363d;border-radius:16px;padding:3px 10px;font-size:clamp(6px,.9vw,11px);color:#a371f7">Dark / Light</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2 LAYOUT OVERVIEW -->
+<div class="sc" id="s2">
+  <div class="scene-title">Genel Arayüz</div>
+  <div style="width:92%;display:flex;gap:8px;height:72%">
+    <div style="flex:1;display:flex;flex-direction:column;gap:0" class="panel">
+      <div class="hdr"><div class="traf"><div class="dot" style="background:#ff5f56"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#27c93f"></div></div><span style="color:#484f58;font-size:clamp(5px,.8vw,10px);margin-left:6px">⌘ kod-review.bot</span><span class="btn" style="margin-left:auto">🌙 Koyu</span><span class="btn" style="margin-left:6px">🌐 TR</span></div>
+      <div style="padding:clamp(4px,.6vw,8px);border-bottom:1px solid #30363d;display:flex;gap:5px;flex-wrap:wrap">
+        <select style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:5px;padding:2px 6px;font-size:clamp(5px,.8vw,10px);font-family:inherit"><option>Otomatik algıla</option></select>
+        <span class="btn">📁 Dosya Yükle</span>
+        <span class="btn">🔄 Çevir</span>
+        <span style="margin-left:auto;color:#484f58;font-size:clamp(5px,.8vw,9px)">8 satır</span>
+      </div>
+      <div style="flex:1;background:#0d1117;padding:clamp(4px,.6vw,8px) 0;line-height:1.6;overflow:hidden">
+        <div class="cl"><span class="ln">1</span><span><span class="kw">function </span><span class="id">auth(</span><span class="id">u, p) {</span></span></div>
+        <div class="cl" style="background:rgba(248,81,73,.07)"><span class="ln">2</span><span><span class="kw">  const </span><span class="id">q=</span><span class="st">`SELECT * WHERE id='${'{u}'}'`</span></span></div>
+        <div class="cl"><span class="ln">3</span><span><span class="kw">  const </span><span class="id">r=</span><span class="kw">await </span><span class="id">db.query(q)</span></span></div>
+        <div class="cl"><span class="ln">4</span><span><span class="kw">  if</span><span class="id">(r.pass===p)</span><span class="kw"> return </span><span class="id">token(u)</span></span></div>
+      </div>
+      <div style="padding:clamp(4px,.7vw,9px);border-top:1px solid #30363d">
+        <div class="btn green" style="width:100%;justify-content:center;padding:clamp(5px,.9vw,10px)">▶ Review Başlat</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column" class="panel">
+      <div style="padding:clamp(6px,1vw,12px);border-bottom:1px solid #30363d;display:flex;align-items:center;gap:8px">
+        <div style="position:relative;width:clamp(36px,5.5vw,58px);height:clamp(36px,5.5vw,58px)">
+          <svg viewBox="0 0 60 60" style="width:100%;height:100%;transform:rotate(-90deg)"><circle cx="30" cy="30" r="24" fill="none" stroke="#21262d" stroke-width="5"/><circle cx="30" cy="30" r="24" fill="none" stroke="#d29922" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="57"/></svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,1.6vw,18px);font-weight:700;color:#d29922">62</div>
+        </div>
+        <div><div style="color:#8b949e;font-size:clamp(5px,.75vw,9px)">JavaScript · Kalite Puanı</div><div style="color:#c9d1d9;font-size:clamp(6px,.85vw,10px);margin-top:2px">SQL injection ve şifre hatası kritik.</div></div>
+        <span class="btn" style="margin-left:auto">📄 PDF</span>
+      </div>
+      <div style="flex:1;padding:clamp(5px,.8vw,10px)">
+        <div class="tab-bar" style="border-radius:5px 5px 0 0;overflow:hidden">
+          <div class="tab active">Açıklama</div><div class="tab">Bulgular (4)</div><div class="tab">Diff</div><div class="tab">Kod</div><div class="tab">Testler</div>
+        </div>
+        <div style="background:#0d1117;border:1px solid #30363d;border-top:none;padding:8px;border-radius:0 0 5px 5px">
+          <div style="color:#8b949e;font-size:clamp(5px,.8vw,10px);line-height:1.5">Bu fonksiyon kullanıcı kimlik doğrulamasını gerçekleştirir. Veritabanından kullanıcı sorgulanır ve şifre karşılaştırılır.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 HEADER BAR -->
+<div class="sc" id="s3">
+  <div class="scene-title">Başlık Çubuğu — Tema & Dil</div>
+  <div style="width:90%;display:flex;flex-direction:column;gap:10px">
+    <div class="panel" style="padding:clamp(6px,1vw,12px);display:flex;align-items:center;gap:8px">
+      <div class="traf"><div class="dot" style="background:#ff5f56"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#27c93f"></div></div>
+      <span style="color:#484f58;font-size:clamp(6px,.9vw,11px);margin-left:8px">⌘ kod-review.bot</span>
+      <div id="thbtn" class="btn" style="margin-left:auto">🌙 Koyu</div>
+      <div id="langbtn" class="btn">🌐 TR</div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div style="flex:1;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px;text-align:center">
+        <div style="color:#8b949e;font-size:clamp(6px,.85vw,10px);margin-bottom:6px">Tema Değiştirme</div>
+        <div id="thpreview" style="background:#0d1117;border-radius:6px;padding:8px;transition:background .5s,color .5s">
+          <div style="font-size:clamp(7px,1vw,12px)" id="thtext">🌙 Koyu mod aktif</div>
+        </div>
+      </div>
+      <div style="flex:1;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px;text-align:center">
+        <div style="color:#8b949e;font-size:clamp(6px,.85vw,10px);margin-bottom:6px">Dil Seçimi</div>
+        <div id="langpreview" style="background:#0d1117;border-radius:6px;padding:8px">
+          <div style="font-size:clamp(7px,1vw,12px);color:#c9d1d9" id="langtext">TR → Türkçe arayüz</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 CODE EDITOR -->
+<div class="sc" id="s4">
+  <div class="scene-title">Kod Editörü — Syntax Highlighting</div>
+  <div style="width:88%;max-width:580px">
+    <div class="hdr" style="border-radius:7px 7px 0 0">
+      <div class="traf"><div class="dot" style="background:#ff5f56"></div><div class="dot" style="background:#ffbd2e"></div><div class="dot" style="background:#27c93f"></div></div>
+      <select style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:5px;padding:2px 6px;font-size:clamp(6px,.85vw,10px);font-family:inherit;margin-left:8px"><option>JavaScript</option></select>
+      <span class="btn" style="margin-left:4px">📁 Dosya Yükle</span>
+      <span style="margin-left:auto;color:#484f58;font-size:clamp(5px,.8vw,9px)">8 satır</span>
+    </div>
+    <div class="code-bg" style="border-radius:0 0 7px 7px">
+      <div class="cl"><span class="ln">1</span><span><span class="kw">function </span><span class="id">authenticate(</span><span class="id">user, password) {</span></span></div>
+      <div class="cl" style="background:rgba(210,153,34,.12)"><span class="ln">2</span><span><span class="kw">  const </span><span class="id">query = </span><span class="st">`SELECT * FROM users WHERE email='${'{user}'}'`</span><span class="id">;</span></span></div>
+      <div class="cl"><span class="ln">3</span><span><span class="kw">  const </span><span class="id">result = </span><span class="kw">await </span><span class="id">db.query(query);</span></span></div>
+      <div class="cl"><span class="ln">4</span><span><span class="kw">  if </span><span class="id">(result.password === password) {</span></span></div>
+      <div class="cl"><span class="ln">5</span><span><span class="kw">    return </span><span class="id">{ token: generateToken(user) };</span></span></div>
+      <div class="cl"><span class="ln">6</span><span><span class="id">  }</span></span></div>
+      <div class="cl"><span class="ln">7</span><span><span class="kw">  return </span><span class="kw">null</span><span class="id">;</span></span></div>
+      <div class="cl"><span class="ln">8</span><span><span class="id">}</span></span></div>
+    </div>
+    <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+      <div style="width:8px;height:8px;border-radius:50%;background:#ff7b72;flex-shrink:0"></div>
+      <span style="color:#ff7b72;font-family:system-ui;font-size:clamp(6px,.85vw,10px)">Keyword</span>
+      <div style="width:8px;height:8px;border-radius:50%;background:#a5d6ff;flex-shrink:0;margin-left:8px"></div>
+      <span style="color:#a5d6ff;font-family:system-ui;font-size:clamp(6px,.85vw,10px)">String</span>
+      <div style="width:8px;height:8px;border-radius:50%;background:#484f58;flex-shrink:0;margin-left:8px"></div>
+      <span style="color:#8b949e;font-family:system-ui;font-size:clamp(6px,.85vw,10px)">Yorum satırı</span>
+      <span style="margin-left:auto;color:#484f58;font-size:clamp(5px,.8vw,9px)">Gerçek zamanlı renklendirme</span>
+    </div>
+  </div>
+</div>
+
+<!-- S5 FILE UPLOAD -->
+<div class="sc" id="s5">
+  <div class="scene-title">Dosya Yükleme — Uzantıdan Dil Tespiti</div>
+  <div style="width:80%;max-width:500px;display:flex;flex-direction:column;gap:10px">
+    <div class="panel" style="padding:clamp(8px,1.5vw,18px);text-align:center">
+      <div style="font-size:clamp(18px,3.5vw,36px);margin-bottom:8px">📁</div>
+      <div style="font-family:system-ui;font-size:clamp(7px,1.1vw,13px);color:#c9d1d9;margin-bottom:4px">authenticate.js yüklendi</div>
+      <div style="font-family:system-ui;font-size:clamp(6px,.9vw,11px);color:#8b949e">Uzantıdan dil otomatik algılandı</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <span style="background:rgba(88,166,255,.12);border:1px solid #58a6ff;border-radius:12px;padding:3px 10px;color:#58a6ff;font-size:clamp(6px,.85vw,10px)">.js → JavaScript ✓</span>
+      <span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 10px;color:#8b949e;font-size:clamp(6px,.85vw,10px)">.py → Python</span>
+      <span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 10px;color:#8b949e;font-size:clamp(6px,.85vw,10px)">.ts → TypeScript</span>
+      <span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 10px;color:#8b949e;font-size:clamp(6px,.85vw,10px)">.java → Java</span>
+      <span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 10px;color:#8b949e;font-size:clamp(6px,.85vw,10px)">.go → Go</span>
+      <span style="background:#21262d;border:1px solid #30363d;border-radius:12px;padding:3px 10px;color:#8b949e;font-size:clamp(6px,.85vw,10px)">.rs → Rust</span>
+    </div>
+  </div>
+</div>
+
+<!-- S6 TRANSLATE -->
+<div class="sc" id="s6">
+  <div class="scene-title">Kod Çevirisi — Diller Arası</div>
+  <div style="width:88%;max-width:560px">
+    <div class="panel">
+      <div class="hdr">
+        <span class="btn blue">🔄 Çevir</span>
+        <span style="color:#8b949e;font-size:clamp(6px,.85vw,10px);margin-left:8px">Hedef dil:</span>
+        <select style="background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:5px;padding:2px 6px;font-size:clamp(6px,.85vw,10px);font-family:inherit;margin-left:4px"><option>Python</option></select>
+        <span class="btn" style="margin-left:8px">Çevir</span>
+        <span style="margin-left:8px;color:#8b949e;font-size:clamp(5px,.8vw,9px);cursor:pointer">İptal</span>
+      </div>
+      <div style="display:flex;gap:0">
+        <div style="flex:1;border-right:1px solid #30363d;padding:clamp(6px,1vw,10px) 0">
+          <div style="color:#484f58;font-size:clamp(5px,.75vw,9px);padding:0 8px 4px">JS (orijinal)</div>
+          <div class="cl"><span class="ln">1</span><span><span class="kw">function </span><span class="id">auth(u, p) {</span></span></div>
+          <div class="cl"><span class="ln">2</span><span><span class="kw">  return </span><span class="id">db.query(q)</span></span></div>
+        </div>
+        <div style="flex:1;padding:clamp(6px,1vw,10px) 0">
+          <div style="color:#3fb950;font-size:clamp(5px,.75vw,9px);padding:0 8px 4px">Python (çevrildi)</div>
+          <div class="cl"><span class="ln">1</span><span><span class="kw">def </span><span class="id">auth(u, p):</span></span></div>
+          <div class="cl"><span class="ln">2</span><span><span class="kw">    return </span><span class="id">db.query(q)</span></span></div>
+        </div>
+      </div>
+      <div style="padding:clamp(5px,.8vw,9px);border-top:1px solid #30363d;display:flex;gap:6px">
+        <span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#3fb950">✓ JavaScript → Python çevirisi tamamlandı</span>
+        <span style="margin-left:auto;color:#8b949e;font-family:system-ui;font-size:clamp(5px,.8vw,9px);text-decoration:underline;cursor:pointer">↩ Orijinale dön</span>
+      </div>
+    </div>
+    <div style="margin-top:6px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e;text-align:center">13 dil desteklenir: JS, TS, Python, Java, C++, C#, Go, Rust, PHP, Ruby, SQL, HTML/CSS...</div>
+  </div>
+</div>
+
+<!-- S7 LANG MISMATCH -->
+<div class="sc" id="s7">
+  <div class="scene-title">Dil Uyuşmazlığı Uyarısı</div>
+  <div style="width:84%;max-width:520px;display:flex;flex-direction:column;gap:8px">
+    <div style="background:rgba(248,81,73,.14);border:1px solid #f85149;border-radius:7px;padding:clamp(7px,1.2vw,13px) clamp(9px,1.5vw,16px);display:flex;gap:10px">
+      <span style="font-size:clamp(12px,2vw,20px)">⚠️</span>
+      <div>
+        <div style="color:#f85149;font-weight:700;font-size:clamp(7px,1.1vw,12px);margin-bottom:3px">Dil Uyuşmazlığı</div>
+        <div style="color:#f85149;opacity:.85;font-size:clamp(6px,.9vw,11px);font-family:system-ui;line-height:1.5">Siz <strong>Java</strong> seçtiniz ama kod aslında <strong>JavaScript</strong> dilinde yazılmış.</div>
+      </div>
+    </div>
+    <div style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px">
+      GPT-4o kodun gerçek dilini otomatik tespit eder ve uyuşmazlık varsa hem uyarı gösterir hem de ilk bulgu olarak critical ekler.
+    </div>
+  </div>
+</div>
+
+<!-- S8 REVIEW + LOADING -->
+<div class="sc" id="s8">
+  <div class="scene-title">Review Başlat & Yükleniyor</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.5vw,28px)">
+    <div class="btn green" style="padding:clamp(10px,1.8vw,18px) clamp(24px,5vw,52px);font-size:clamp(9px,1.5vw,16px);font-weight:700;display:flex;align-items:center;gap:10px;box-shadow:0 0 24px rgba(35,134,54,.4)">
+      <div id="spin8" style="width:clamp(12px,2vw,18px);height:clamp(12px,2vw,18px);border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%"></div>
+      İnceleniyor...
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div id="rl1" style="display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .4s"><div style="width:7px;height:7px;border-radius:50%;background:#58a6ff;flex-shrink:0"></div><span style="color:#58a6ff;font-family:system-ui;font-size:clamp(8px,1.2vw,13px)">Kod yapısı analiz ediliyor...</span></div>
+      <div id="rl2" style="display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .4s"><div style="width:7px;height:7px;border-radius:50%;background:#d29922;flex-shrink:0"></div><span style="color:#d29922;font-family:system-ui;font-size:clamp(8px,1.2vw,13px)">Güvenlik açıkları taranıyor...</span></div>
+      <div id="rl3" style="display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .4s"><div style="width:7px;height:7px;border-radius:50%;background:#a371f7;flex-shrink:0"></div><span style="color:#a371f7;font-family:system-ui;font-size:clamp(8px,1.2vw,13px)">Birim testleri üretiliyor...</span></div>
+      <div id="rl4" style="display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .4s"><div style="width:7px;height:7px;border-radius:50%;background:#3fb950;flex-shrink:0"></div><span style="color:#3fb950;font-family:system-ui;font-size:clamp(8px,1.2vw,13px)">İyileştirilmiş kod hazırlanıyor...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 SCORE + COST -->
+<div class="sc" id="s9">
+  <div class="scene-title">Kalite Puanı & Session Maliyeti</div>
+  <div style="width:88%;max-width:540px;display:flex;flex-direction:column;gap:8px">
+    <div class="panel" style="padding:clamp(8px,1.5vw,16px);display:flex;align-items:center;gap:12px">
+      <div style="position:relative;width:clamp(52px,8vw,80px);height:clamp(52px,8vw,80px);flex-shrink:0">
+        <svg viewBox="0 0 80 80" style="width:100%;height:100%;transform:rotate(-90deg)"><circle cx="40" cy="40" r="32" fill="none" stroke="#21262d" stroke-width="7"/><circle cx="40" cy="40" r="32" fill="none" stroke="#d29922" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="76"/></svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:clamp(13px,2.2vw,24px);font-weight:700;color:#d29922">62</span><span style="font-size:clamp(5px,.75vw,9px);color:#484f58">/100</span></div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:clamp(6px,.85vw,10px);color:#8b949e;margin-bottom:3px">JavaScript · Kalite Puanı</div>
+        <div style="font-size:clamp(6px,.9vw,11px);color:#c9d1d9;line-height:1.5">SQL injection ve düz metin şifre karşılaştırma kritik güvenlik açıkları içeriyor.</div>
+      </div>
+      <span class="btn" style="flex-shrink:0">📄 PDF</span>
+    </div>
+    <div class="panel" style="padding:clamp(5px,.9vw,10px) clamp(8px,1.2vw,14px);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:clamp(5px,.8vw,9px);color:#484f58;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Bu Oturum</span>
+      <span style="background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25);border-radius:10px;padding:2px 9px;font-size:clamp(9px,1.5vw,16px);font-weight:700;color:#3fb950">$0.0042</span>
+      <span style="font-size:clamp(5px,.75vw,9px);color:#484f58">18,240 token (14,100 giriş · 4,140 çıkış)</span>
+      <span style="font-size:clamp(5px,.75vw,9px);color:#484f58">· 1 API çağrısı</span>
+      <span style="margin-left:auto;font-size:clamp(5px,.75vw,9px);color:#484f58;cursor:pointer">Sıfırla</span>
+    </div>
+  </div>
+</div>
+
+<!-- S10 METRICS -->
+<div class="sc" id="s10">
+  <div class="scene-title">Metrik Çubukları — 4 Boyut</div>
+  <div style="width:80%;max-width:480px">
+    <div class="panel" style="padding:clamp(10px,1.8vw,20px)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.5vw,16px) clamp(14px,2.5vw,28px)">
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:system-ui;font-size:clamp(7px,1vw,12px);color:#8b949e">Güvenlik</span><span style="color:#f85149;font-size:clamp(7px,1vw,12px);font-weight:700" id="v1">40</span></div><div class="bar-wrap"><div class="bar-fill" id="b1" style="background:#f85149;width:0"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:system-ui;font-size:clamp(7px,1vw,12px);color:#8b949e">Performans</span><span style="color:#d29922;font-size:clamp(7px,1vw,12px);font-weight:700" id="v2">65</span></div><div class="bar-wrap"><div class="bar-fill" id="b2" style="background:#d29922;width:0"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:system-ui;font-size:clamp(7px,1vw,12px);color:#8b949e">Okunabilirlik</span><span style="color:#58a6ff;font-size:clamp(7px,1vw,12px);font-weight:700" id="v3">72</span></div><div class="bar-wrap"><div class="bar-fill" id="b3" style="background:#58a6ff;width:0"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:system-ui;font-size:clamp(7px,1vw,12px);color:#8b949e">Sürdürülebilirlik</span><span style="color:#a371f7;font-size:clamp(7px,1vw,12px);font-weight:700" id="v4">68</span></div><div class="bar-wrap"><div class="bar-fill" id="b4" style="background:#a371f7;width:0"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S11 CODE STATS -->
+<div class="sc" id="s11">
+  <div class="scene-title">📊 Kod İstatistikleri</div>
+  <div style="width:88%;max-width:540px">
+    <div class="panel" style="padding:clamp(8px,1.4vw,16px)">
+      <div style="font-size:clamp(7px,1vw,11px);color:#8b949e;font-weight:700;margin-bottom:8px">📊 Kod İstatistikleri</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+        <div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Toplam Satır</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">247</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Kod Satırı</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">198</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Yorum Satırı</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">23</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Sınıf</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">3</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Fonksiyon</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">14</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Ort. Fonk. Uzunluğu</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">12</span></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">If/Else</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">18</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Döngü</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">7</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Switch/Match</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">2</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Try/Catch</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#e6edf3">3</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #21262d"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Maks. İç İçe Derinlik</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#d29922">4</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0;align-items:center"><span style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#8b949e">Siklomatik Karmaşıklık</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:clamp(5px,.75vw,9px);color:#d29922;font-weight:700">Orta</span><span style="background:#21262d;border-radius:8px;padding:1px 7px;font-size:clamp(6px,.85vw,10px);font-weight:700;color:#d29922">9</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S12 EXPLANATION TAB -->
+<div class="sc" id="s12">
+  <div class="scene-title">Sekme: Açıklama</div>
+  <div style="width:86%;max-width:540px">
+    <div class="tab-bar" style="border-radius:7px 7px 0 0;overflow:hidden">
+      <div class="tab active">📖 Açıklama</div><div class="tab">Bulgular (4)</div><div class="tab">Diff</div><div class="tab">İyileştirilmiş Kod</div><div class="tab">Testler</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 7px 7px;padding:clamp(8px,1.5vw,16px)">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;color:#58a6ff;font-size:clamp(7px,1.1vw,13px);font-weight:700">
+        <span>📖</span> Kod Açıklaması
+      </div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #58a6ff;border-radius:6px;padding:clamp(8px,1.4vw,14px);font-family:system-ui;font-size:clamp(7px,1.1vw,12px);color:#c9d1d9;line-height:1.65">
+        Bu fonksiyon kullanıcı kimlik doğrulamasını gerçekleştirir. Veritabanına SQL sorgusu göndererek kullanıcıyı bulur, ardından şifre karşılaştırması yapar. Başarılıysa bir token döndürür, değilse null. Ancak SQL injection ve düz metin şifre saklaması nedeniyle kritik güvenlik açıkları barındırmaktadır.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S13 FINDINGS TAB -->
+<div class="sc" id="s13">
+  <div class="scene-title">Sekme: Bulgular — Filtre & Satıra Git</div>
+  <div style="width:86%;max-width:540px">
+    <div class="tab-bar" style="border-radius:7px 7px 0 0;overflow:hidden">
+      <div class="tab">Açıklama</div><div class="tab active">Bulgular (4)</div><div class="tab">Diff</div><div class="tab">İyileştirilmiş Kod</div><div class="tab">Testler</div>
+    </div>
+    <div style="background:#161b22;border:1px solid #30363d;border-top:none;padding:6px 10px;display:flex;gap:5px;flex-wrap:wrap">
+      <span class="chip" style="background:#8b949e;color:#0d1117;border-color:#8b949e">Tümü 4</span>
+      <span class="chip" style="color:#f85149;border-color:#f85149">Kritik 2</span>
+      <span class="chip" style="color:#d29922;border-color:#d29922">Uyarı 1</span>
+      <span class="chip" style="color:#58a6ff;border-color:#58a6ff">Öneri 1</span>
+    </div>
+    <div style="background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 7px 7px;padding:8px">
+      <div class="finding in"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:15px;height:15px;border-radius:3px;background:rgba(248,81,73,.12);color:#f85149;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">✕</span><span style="color:#e6edf3;font-weight:700;font-size:clamp(7px,1.1vw,12px)">SQL Injection Açığı</span><span style="margin-left:auto;color:#f85149;font-size:clamp(5px,.8vw,9px);background:rgba(248,81,73,.1);padding:1px 6px;border-radius:8px">↗ Satır 2</span></div><div style="color:#8b949e;font-family:system-ui;font-size:clamp(6px,.85vw,10px)">Parametrize sorgu kullanılmalı.</div><div style="background:#0d1117;border-radius:4px;padding:4px 7px;margin-top:4px;font-size:clamp(5px,.8vw,9px);color:#7ee787;border-left:2px solid #238636">💡 db.query('SELECT * WHERE id=$1', [user]) kullan</div></div>
+      <div class="finding in" style="border-left-color:#d29922"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:15px;height:15px;border-radius:3px;background:rgba(210,153,34,.12);color:#d29922;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">▲</span><span style="color:#e6edf3;font-weight:700;font-size:clamp(7px,1.1vw,12px)">Hata Yönetimi Eksik</span></div><div style="color:#8b949e;font-family:system-ui;font-size:clamp(6px,.85vw,10px)">try/catch bloğu eklenmelidir.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S14 DIFF UNIFIED -->
+<div class="sc" id="s14">
+  <div class="scene-title">Sekme: Diff — Birleşik Görünüm</div>
+  <div style="width:88%;max-width:560px">
+    <div class="tab-bar" style="border-radius:7px 7px 0 0;overflow:hidden">
+      <div class="tab">Açıklama</div><div class="tab">Bulgular (4)</div><div class="tab active">Diff</div><div class="tab">İyileştirilmiş Kod</div><div class="tab">Testler</div>
+    </div>
+    <div style="background:#161b22;border:1px solid #30363d;border-top:none;padding:5px 10px;display:flex;align-items:center;gap:10px">
+      <span style="color:#3fb950;font-size:clamp(6px,.85vw,10px);font-weight:700">+6 eklendi</span>
+      <span style="color:#f85149;font-size:clamp(6px,.85vw,10px);font-weight:700">−4 silindi</span>
+      <div style="margin-left:auto;display:flex;border:1px solid #30363d;border-radius:5px;overflow:hidden">
+        <span style="padding:2px 8px;background:#21262d;color:#c9d1d9;font-size:clamp(5px,.8vw,9px)">Birleşik</span>
+        <span style="padding:2px 8px;color:#8b949e;font-size:clamp(5px,.8vw,9px)">Yan yana</span>
+      </div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 7px 7px;font-size:clamp(6px,.9vw,11px);line-height:1.75">
+      <div style="display:flex;background:rgba(248,81,73,.1)"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">2</span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)"></span><span style="width:14px;color:#f85149;text-align:center">-</span><span style="color:#f85149;opacity:.85">const q=`SELECT * WHERE email='${'{user}'}'`</span></div>
+      <div style="display:flex;background:rgba(63,185,80,.1)"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)"></span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">2</span><span style="width:14px;color:#3fb950;text-align:center">+</span><span style="color:#3fb950">const q='SELECT * WHERE email=$1'</span></div>
+      <div style="display:flex;background:rgba(63,185,80,.1)"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)"></span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">3</span><span style="width:14px;color:#3fb950;text-align:center">+</span><span style="color:#3fb950">const r=await db.query(q,[user])</span></div>
+      <div style="display:flex;background:rgba(248,81,73,.1)"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">4</span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)"></span><span style="width:14px;color:#f85149;text-align:center">-</span><span style="color:#f85149;opacity:.85">if(result.password===password) {</span></div>
+      <div style="display:flex;background:rgba(63,185,80,.1)"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)"></span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">5</span><span style="width:14px;color:#3fb950;text-align:center">+</span><span style="color:#3fb950">const ok=await bcrypt.compare(p,r.rows[0].hash)</span></div>
+      <div style="display:flex"><span style="width:28px;text-align:right;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">5</span><span style="width:28px;padding-right:6px;color:#484f58;font-size:clamp(5px,.75vw,9px)">6</span><span style="width:14px;color:#484f58;text-align:center"> </span><span style="color:#c9d1d9">return { token: generateToken(user) }</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S15 DIFF SPLIT -->
+<div class="sc" id="s15">
+  <div class="scene-title">Sekme: Diff — Yan Yana Görünüm</div>
+  <div style="width:90%;max-width:580px">
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:7px 7px 0 0;padding:5px 10px;display:flex;align-items:center;gap:10px">
+      <span style="color:#3fb950;font-size:clamp(6px,.85vw,10px);font-weight:700">+6</span><span style="color:#f85149;font-size:clamp(6px,.85vw,10px);font-weight:700">−4</span>
+      <div style="margin-left:auto;display:flex;border:1px solid #30363d;border-radius:5px;overflow:hidden">
+        <span style="padding:2px 8px;color:#8b949e;font-size:clamp(5px,.8vw,9px)">Birleşik</span>
+        <span style="padding:2px 8px;background:#21262d;color:#c9d1d9;font-size:clamp(5px,.8vw,9px)">Yan yana</span>
+      </div>
+    </div>
+    <div style="display:flex;background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 7px 7px;font-size:clamp(6px,.9vw,11px);line-height:1.75">
+      <div style="flex:1;border-right:1px solid #30363d">
+        <div style="background:#161b22;padding:3px 8px;font-family:system-ui;font-size:clamp(5px,.75vw,9px);color:#8b949e;font-weight:700;border-bottom:1px solid #30363d">Eski</div>
+        <div style="background:rgba(248,81,73,.1);display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">2</span><span style="color:#f85149;opacity:.85;font-size:clamp(5px,.8vw,10px)">const q=`...WHERE email='${'{u}'}'`</span></div>
+        <div style="display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">3</span><span style="color:#c9d1d9;font-size:clamp(5px,.8vw,10px)">const r=await db.query(q)</span></div>
+        <div style="background:rgba(248,81,73,.1);display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">4</span><span style="color:#f85149;opacity:.85;font-size:clamp(5px,.8vw,10px)">if(r.password===password)</span></div>
+      </div>
+      <div style="flex:1">
+        <div style="background:#161b22;padding:3px 8px;font-family:system-ui;font-size:clamp(5px,.75vw,9px);color:#8b949e;font-weight:700;border-bottom:1px solid #30363d">Yeni</div>
+        <div style="background:rgba(63,185,80,.1);display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">2</span><span style="color:#3fb950;font-size:clamp(5px,.8vw,10px)">const q='SELECT * WHERE email=$1'</span></div>
+        <div style="background:rgba(63,185,80,.1);display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">3</span><span style="color:#3fb950;font-size:clamp(5px,.8vw,10px)">const r=await db.query(q,[user])</span></div>
+        <div style="background:rgba(63,185,80,.1);display:flex"><span style="width:22px;text-align:right;padding-right:5px;color:#484f58;font-size:clamp(5px,.7vw,8px)">5</span><span style="color:#3fb950;font-size:clamp(5px,.8vw,10px)">const ok=await bcrypt.compare(p,hash)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S16 IMPROVED CODE -->
+<div class="sc" id="s16">
+  <div class="scene-title">Sekme: İyileştirilmiş Kod</div>
+  <div style="width:86%;max-width:540px">
+    <div class="tab-bar" style="border-radius:7px 7px 0 0;overflow:hidden">
+      <div class="tab">Açıklama</div><div class="tab">Bulgular (4)</div><div class="tab">Diff</div><div class="tab active">İyileştirilmiş Kod</div><div class="tab">Testler</div>
+    </div>
+    <div style="background:#161b22;border:1px solid #30363d;border-top:none;padding:5px 10px;display:flex;justify-content:flex-end">
+      <span class="btn">⧉ Kopyala</span>
+    </div>
+    <div style="background:rgba(63,185,80,.05);border:1px solid #30363d;border-top:none;padding:7px 10px">
+      <div style="color:#3fb950;font-size:clamp(6px,.85vw,10px);font-weight:700;margin-bottom:3px">✨ Neler değişti?</div>
+      <div style="font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;line-height:1.5">SQL injection için parametrize sorgu eklendi. bcrypt ile şifre güvenli karşılaştırılıyor. try/catch ile hata yönetimi sağlandı.</div>
+    </div>
+    <div class="code-bg" style="border-radius:0 0 7px 7px;border:1px solid #30363d;border-top:none">
+      <div class="cl"><span class="ln">1</span><span><span class="kw">async function </span><span class="id">authenticate(</span><span class="id">user: string, password: string) {</span></span></div>
+      <div class="cl"><span class="ln">2</span><span><span class="kw">  try </span><span class="id">{</span></span></div>
+      <div class="cl"><span class="ln">3</span><span><span class="kw">    const </span><span class="id">q = </span><span class="st">'SELECT * FROM users WHERE email = $1'</span><span class="id">;</span></span></div>
+      <div class="cl"><span class="ln">4</span><span><span class="kw">    const </span><span class="id">result = </span><span class="kw">await </span><span class="id">db.query(q, [user]);</span></span></div>
+      <div class="cl"><span class="ln">5</span><span><span class="kw">    const </span><span class="id">ok = </span><span class="kw">await </span><span class="id">bcrypt.compare(password, result.rows[</span><span class="nu">0</span><span class="id">].hash);</span></span></div>
+      <div class="cl"><span class="ln">6</span><span><span class="kw">    return </span><span class="id">ok ? { token: generateToken(user) } : </span><span class="kw">null</span><span class="id">;</span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S17 TESTS TAB -->
+<div class="sc" id="s17">
+  <div class="scene-title">Sekme: Birim Testleri</div>
+  <div style="width:86%;max-width:540px">
+    <div class="tab-bar" style="border-radius:7px 7px 0 0;overflow:hidden">
+      <div class="tab">Açıklama</div><div class="tab">Bulgular (4)</div><div class="tab">Diff</div><div class="tab">İyileştirilmiş Kod</div><div class="tab active">🧪 Testler</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #30363d;border-top:none;border-radius:0 0 7px 7px;padding:clamp(7px,1.2vw,14px)">
+      <div style="background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.25);border-radius:12px;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;margin-bottom:8px;color:#58a6ff;font-size:clamp(6px,.85vw,10px);font-weight:700">🧪 Jest</div>
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#58a6ff;font-size:clamp(6px,.85vw,10px);font-weight:700">Orijinal Kod Testleri</span><span class="btn" style="font-size:clamp(5px,.75vw,9px)">⧉ Kopyala</span></div>
+        <div class="code-bg" style="border-radius:5px;border:1px solid #30363d;border-left:3px solid #58a6ff;padding:clamp(5px,.8vw,8px) 0">
+          <div class="cl"><span class="ln">1</span><span><span class="id">test(</span><span class="st">'auth returns null on wrong pass'</span><span class="id">, async () =&gt; {</span></span></div>
+          <div class="cl"><span class="ln">2</span><span><span class="kw">  const </span><span class="id">res = await authenticate(</span><span class="st">'user'</span><span class="id">, </span><span class="st">'wrong'</span><span class="id">);</span></span></div>
+          <div class="cl"><span class="ln">3</span><span><span class="id">  expect(res).toBeNull();</span></span></div>
+          <div class="cl"><span class="ln">4</span><span><span class="id">});</span></span></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#3fb950;font-size:clamp(6px,.85vw,10px);font-weight:700">İyileştirilmiş Kod Testleri</span><span class="btn" style="font-size:clamp(5px,.75vw,9px)">⧉ Kopyala</span></div>
+        <div class="code-bg" style="border-radius:5px;border:1px solid #30363d;border-left:3px solid #3fb950;padding:clamp(5px,.8vw,8px) 0">
+          <div class="cl"><span class="ln">1</span><span><span class="id">test(</span><span class="st">'auth uses bcrypt compare'</span><span class="id">, async () =&gt; {</span></span></div>
+          <div class="cl"><span class="ln">2</span><span><span class="id">  jest.spyOn(bcrypt, </span><span class="st">'compare'</span><span class="id">).mockResolvedValue(</span><span class="kw">true</span><span class="id">);</span></span></div>
+          <div class="cl"><span class="ln">3</span><span><span class="id">  expect(await authenticate(</span><span class="st">'u'</span><span class="id">, </span><span class="st">'p'</span><span class="id">)).not.toBeNull();</span></span></div>
+          <div class="cl"><span class="ln">4</span><span><span class="id">});</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S18 PDF + OUTRO -->
+<div class="sc" id="s18">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vw,22px);width:88%">
+    <div style="display:flex;align-items:center;gap:clamp(8px,1.5vw,16px)">
+      <span style="font-size:clamp(20px,4vw,44px)">🔍</span>
+      <div style="font-size:clamp(16px,3.5vw,40px);font-weight:700;letter-spacing:-1px">
+        <span style="color:#58a6ff">Kod</span> <span style="color:#e6edf3">Review</span> <span style="color:#3fb950">Bot</span>
+      </div>
+    </div>
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:clamp(8px,1.5vw,16px);width:100%;max-width:540px">
+      <div style="font-family:system-ui;font-size:clamp(7px,1.1vw,12px);color:#8b949e;margin-bottom:6px">📄 PDF Raporu — tüm analiz tek belgede</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">Skor</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">Açıklama</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">Metrikler</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">Bulgular</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">İstatistikler</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">İyileştirilmiş Kod</span>
+        <span style="font-family:system-ui;font-size:clamp(5px,.8vw,10px);background:#21262d;border-radius:5px;padding:2px 7px;color:#c9d1d9">Testler</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:540px">
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #58a6ff;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🔍 Analiz</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #f85149;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🛡️ Güvenlik</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #3fb950;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">⚡ İyileştirme</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #a371f7;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🧪 Testler</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #d29922;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🔄 Çeviri</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #a371f7;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🌐 TR/EN</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #58a6ff;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">🌙 Tema</div>
+      <div style="background:#161b22;border:1px solid #30363d;border-left:3px solid #3fb950;border-radius:7px;padding:6px 8px;font-family:system-ui;font-size:clamp(6px,.85vw,10px);color:#c9d1d9;text-align:center">📄 PDF</div>
+    </div>
+    <div style="background:rgba(31,111,235,.12);border:1px solid rgba(31,111,235,.3);border-radius:20px;padding:5px 20px;font-family:system-ui;font-size:clamp(8px,1.2vw,13px);color:#58a6ff;font-weight:600">✨ Powered by GPT-4o</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const SCENES=[
+  {id:'s1',dur:2800,lbl:'1/18 — Intro'},
+  {id:'s2',dur:3200,lbl:'2/18 — Genel Arayüz'},
+  {id:'s3',dur:2800,lbl:'3/18 — Tema & Dil'},
+  {id:'s4',dur:2800,lbl:'4/18 — Kod Editörü'},
+  {id:'s5',dur:2500,lbl:'5/18 — Dosya Yükleme'},
+  {id:'s6',dur:3000,lbl:'6/18 — Kod Çevirisi'},
+  {id:'s7',dur:2600,lbl:'7/18 — Dil Uyuşmazlığı'},
+  {id:'s8',dur:3000,lbl:'8/18 — Review & Yükleme'},
+  {id:'s9',dur:3000,lbl:'9/18 — Skor & Maliyet'},
+  {id:'s10',dur:2800,lbl:'10/18 — Metrikler'},
+  {id:'s11',dur:3000,lbl:'11/18 — Kod İstatistikleri'},
+  {id:'s12',dur:2600,lbl:'12/18 — Açıklama Sekmesi'},
+  {id:'s13',dur:3000,lbl:'13/18 — Bulgular Sekmesi'},
+  {id:'s14',dur:2800,lbl:'14/18 — Diff Birleşik'},
+  {id:'s15',dur:2600,lbl:'15/18 — Diff Yan Yana'},
+  {id:'s16',dur:3000,lbl:'16/18 — İyileştirilmiş Kod'},
+  {id:'s17',dur:3000,lbl:'17/18 — Testler Sekmesi'},
+  {id:'s18',dur:3500,lbl:'18/18 — PDF & Özet'},
+];
+const TOTAL=SCENES.reduce((a,s)=>a+s.dur,0);
+let cur=0,elapsed=0,paused=false,last=null,raf=null,entered=false;
+const bar=document.getElementById('bar');
+const lbl=document.getElementById('lbl');
+const pbtn=document.getElementById('pbtn');
+
+function showScene(i){
+  SCENES.forEach((s,j)=>{
+    const el=document.getElementById(s.id);
+    if(el)el.classList.toggle('on',j===i);
+  });
+  lbl.textContent=SCENES[i].lbl;
+  entered=false;
+  setTimeout(()=>enterScene(i),80);
+}
+
+let spinInterval=null;
+function enterScene(i){
+  if(entered)return;entered=true;
+  if(i===0){
+    setTimeout(()=>{const e=document.getElementById('s1s');if(e)e.style.opacity=1},500);
+    setTimeout(()=>{const e=document.getElementById('s1t');if(e)e.style.opacity=1},900);
+  }
+  if(i===2){
+    let th=false,la=false;
+    setTimeout(()=>{
+      const tb=document.getElementById('thbtn'),tp=document.getElementById('thpreview'),tt=document.getElementById('thtext');
+      if(tb&&tp&&tt){
+        tb.textContent='☀️ Açık';
+        tp.style.background='#ffffff';tp.style.color='#1f2328';
+        tt.textContent='☀️ Açık mod aktif';tt.style.color='#1f2328';
+      }
+    },1200);
+    setTimeout(()=>{
+      const lb=document.getElementById('langbtn'),lt=document.getElementById('langtext');
+      if(lb&&lt){lb.textContent='🌐 EN';lt.textContent='EN → English interface';}
+    },1800);
+  }
+  if(i===7){
+    if(spinInterval)clearInterval(spinInterval);
+    const sp=document.getElementById('spin8');
+    let ang=0;
+    spinInterval=setInterval(()=>{ang=(ang+8)%360;if(sp)sp.style.transform=`rotate(${ang}deg)`;},16);
+    setTimeout(()=>{const e=document.getElementById('rl1');if(e)e.style.opacity=1},300);
+    setTimeout(()=>{const e=document.getElementById('rl2');if(e)e.style.opacity=1},900);
+    setTimeout(()=>{const e=document.getElementById('rl3');if(e)e.style.opacity=1},1500);
+    setTimeout(()=>{const e=document.getElementById('rl4');if(e)e.style.opacity=1},2100);
+  }
+  if(i===9){
+    setTimeout(()=>{
+      [['b1',40],['b2',65],['b3',72],['b4',68]].forEach(([id,val])=>{
+        const el=document.getElementById(id);if(el)el.style.width=val+'%';
+      });
+    },200);
+  }
+}
+
+function tick(ts){
+  if(!last)last=ts;
+  const dt=paused?0:ts-last;last=ts;
+  elapsed+=dt;
+  const sd=SCENES[cur].dur;
+  const prev=SCENES.slice(0,cur).reduce((a,s)=>a+s.dur,0);
+  bar.style.width=((prev+Math.min(elapsed,sd))/TOTAL*100)+'%';
+  if(!paused&&elapsed>=sd){
+    elapsed=0;
+    cur=(cur+1)%SCENES.length;
+    showScene(cur);
+  }
+  raf=requestAnimationFrame(tick);
+}
+
+pbtn.addEventListener('click',()=>{
+  paused=!paused;pbtn.textContent=paused?'▶':'⏸';
+  if(!paused)last=null;
+});
+
+showScene(0);
+raf=requestAnimationFrame(tick);
+</script>
